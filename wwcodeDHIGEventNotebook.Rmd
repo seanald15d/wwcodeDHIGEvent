@@ -131,6 +131,78 @@ chapters <- d %>%
 
 ```
 
+## Comparing Data and Making Observations
+
+```{r comparing and observing}
+
+# generating raw count of word tokens in the Johanna Drucker quotation
+jd_count <- JD_df %>%
+  unnest_tokens(output = word, input = JD_capta) %>%
+  count(word, sort = TRUE)
+
+# generate a raw count of word tokens in Pride and Prejudice
+
+
+
+```
+
+The word counts we've generated represent *raw frequencies*, meaning that they just tell us how many of each word type are found in each text analyzed. *Relative frequencies* give us similar information, but tell us specifically what percentage of the text in question each word token comprises.
+
+Recognizing this difference, calculate the relative frequencies for each word token and append that information to your current data frames (for the Johanna Drucker quotation word counts and the *Pride and Prejudice* counts). R, like most programming langauges has syntax unique to itself. To aid your efforts, we've provided an example of how you might add a new column like a relative freqruency one to an existing data frame.
+
+```{r}
+
+# example of adding a column to a data frame
+pride_count$new_column <- 1:nrow(pride_count)
+
+# and to get rid of this totally unnecessary column we could do something like this:
+pride_count <- pride_count[-3]
+
+# Add the relative frequencies as a separate column to your data frames
+
+
+
+# As a bonus, remove the raw frequency column ("n"). Remember that R, unlike most other languages, begins indexing at 1, not 0.
+
+
+
+
+```
+
+Now, let's plot some of these relative frequencies to gain a sense of what words each text seems to use, well, frequently!
+
+```{r plotting frequencies}
+
+# load a plotting library
+library(ggplot2)
+
+# plot each 
+pride_count %>%
+  top_n(10) %>%
+  mutate(word = reorder(word,rel_freqs)) %>% #reorders word frame by n
+  ggplot(aes(word,rel_freqs),size = 7) +
+  geom_col() +
+  xlab(NULL) +
+  theme_minimal()+
+  coord_flip()
+
+jd_count %>%
+  top_n(10) %>%
+  mutate(word = reorder(word,rel_freqs)) %>% #reorders word frame by n
+  ggplot(aes(word,rel_freqs),size = 7) +
+  geom_col() +
+  xlab(NULL) +
+  theme_minimal()+
+  coord_flip()
+
+# looking at these two plots, what are some observations you have about top frequent words used?
+
+
+
+
+```
+
+## Removing Stop Words and Stemming
 
 
 
