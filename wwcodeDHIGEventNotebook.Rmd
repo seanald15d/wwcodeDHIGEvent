@@ -81,7 +81,7 @@ JD_df %>%
   unnest_tokens(output = word, input = JD_capta, token = "words")
 
 JD_df %>%
-  unnest_tokens(output = trigram, input = JD_capta, token = "ngrams", n=3)
+  unnest_tokens(output = bigram, input = JD_capta, token = "ngrams", n=2)
 
 # 
 
