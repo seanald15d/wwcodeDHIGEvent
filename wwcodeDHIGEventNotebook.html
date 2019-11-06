@@ -450,22 +450,56 @@ JD_df %&gt;%
 ## 10 and         
 ## # ... with 66 more rows</code></pre>
 <pre class="r"><code>JD_df %&gt;%
-  unnest_tokens(output = trigram, input = JD_capta, token = &quot;ngrams&quot;, n=3)</code></pre>
-<pre><code>## # A tibble: 74 x 1
-##    trigram               
-##    &lt;chr&gt;                 
-##  1 differences in the    
-##  2 in the etymological   
-##  3 the etymological roots
-##  4 etymological roots of 
-##  5 roots of the          
-##  6 of the terms          
-##  7 the terms data        
-##  8 terms data and        
-##  9 data and capta        
-## 10 and capta make        
-## # ... with 64 more rows</code></pre>
-<pre class="r"><code># </code></pre>
+  unnest_tokens(output = bigram, input = JD_capta, token = &quot;ngrams&quot;, n=2)</code></pre>
+<pre><code>## # A tibble: 75 x 1
+##    bigram            
+##    &lt;chr&gt;             
+##  1 differences in    
+##  2 in the            
+##  3 the etymological  
+##  4 etymological roots
+##  5 roots of          
+##  6 of the            
+##  7 the terms         
+##  8 terms data        
+##  9 data and          
+## 10 and capta         
+## # ... with 65 more rows</code></pre>
+<pre class="r"><code># What do you notice about each result that prints? In each case, what is the &quot;token&quot; for analysis? Why might we choose each type of tokenization?
+
+
+
+# Adjust the above code to tokenize the text into different ngrams (trigrams perhaps)
+
+
+
+# Now, try to tokenize the text by sentences (hint: use the file and help pane to find out more about the unnest_tokens function and its parameters)</code></pre>
+<p>Now that we’ve gotten a handle on tokenizing text with some packages developed for R, let’s play with some more interesting text data.</p>
+<p>We’ll be using Jane Austen’s <em>Pride and Prejudice</em>. R has a convenient “janeaustenr” package that has the text of most of Jane Austen’s works. We’ll go ahead and load <em>Pride and Prejudice</em> into a dataframe (tibble) and see what kinds of observations we can make.</p>
+<p>We’ll start by tokenizing the text of Jane Austen using regex. Run the block of code and observe what happens.</p>
+<pre class="r"><code>#install.packages(&#39;janeaustenr&#39;)
+library(janeaustenr)
+d &lt;- tibble(txt = prideprejudice)
+
+w &lt;- d %&gt;%
+  unnest_tokens(segment, txt, token = &quot;regex&quot;, pattern = &quot;-&quot;)
+
+head(w) # the first 6 segments based on our regex pattern</code></pre>
+<pre><code>## # A tibble: 6 x 1
+##   segment                                                                  
+##   &lt;chr&gt;                                                                    
+## 1 &quot;pride and prejudice\n\nby jane austen\n\n\n\nchapter 1\n\n\nit is a tru~
+## 2 &quot;up daughters, she ought to give over thinking of her own beauty.\&quot;\n\n\~
+## 3 &quot;scrupulous, surely. i dare say mr. bingley will be very\nglad to see yo~
+## 4 &quot;humoured as lydia. but you are always giving _her_ the preference.\&quot;\n\~
+## 5 and                                                                      
+## 6 &quot;twenty years had\nbeen insufficient to make his wife understand his cha~</code></pre>
+<p>This split, while interesting, doesn’t seem entirely useful. Novels like <em>Pride and Prejudice</em>, though, are typically broken up by chapter. Below, use the regex tokenization features of unnest_tokens to break <em>Pride and Prejudice</em> up by chapter and print the first 6 results to your console.</p>
+<pre class="r"><code>chapters &lt;- d %&gt;%
+  unnest_tokens(chapter, txt, token = &quot;regex&quot;, pattern = &quot;&quot;)</code></pre>
+<pre><code>## Warning in stri_split_regex(x, pattern = pattern, omit_empty = TRUE): empty
+## search patterns are not supported</code></pre>
+<pre class="r"><code># output first 6 results below</code></pre>
 </div>
 
 
