@@ -1,0 +1,90 @@
+---
+title: "Text Analysis with R"
+author: "Sean"
+date: "11/6/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Setting up and Gettings Started with R
+
+Now that you have R and RStudio installed, let's do a few things to make sure that everything is working properly.
+
+First, find the "Session" menu tab at the top of the window (5 menu tabs to the right of "File."). Click "Session" and then navigate through "Set Working Directory" to "Choose Directory." Follow the file chooser dialog and choose/make a directory that you want to work with for the workshop today. When you have finished this step, look in the console pane of RStudio. You should see something like this:
+
+> setwd("~/folderYouChose")
+
+Congratulations, you've just run your first piece of R code! The setwd() command that R produced is a built-in function that sets your working directory to a folder of your choice. This can be an important step for when you are writing to and reading from files for a project you may be working on.
+
+Now let's do one last check to ensure that R is working properly. Go ahead and run the chunk of code below:
+
+```{r math}
+
+1+1 # r can do the math
+2*2 # r can also do the comment
+459689230409/9034953849723
+2*pi # r knows some digits of pi
+x <- 2 # r can assign the variable
+y <- 27 # r can assign the other variable
+x^y # r can raise to a power
+
+```
+
+If the console prints 5 results, then you are good to go with R and RStudio.
+
+## Working with Text as Data
+
+When we humans read text, we do not necessarily consider individual words. Instead, we consider the larger work (a novel, a play, a news article, a facebook status update) and perhaps groups of words that together inform our understanding of the text we are reading and give context to the individual words themselves. This is a complex *learning* process!
+
+In computationally-assisted text analysis, the process is a little different. When working with text, an interested analyst will perform a couple of steps to preprocess text data for computation, often making decisions about how to impose some meaningful structure on the text. For instance, when working with a novel (or many novels), one might choose to divide text into chunks based on chapter divisions or an arbitrary number of tokens (words or sentences).
+
+Such a dilemma, that becomes particularly visible when working with text, bears implications for how we conceive of data and insights. Johanna Drucker explains this phenomenon expertly:
+
+>"Differences in the etymological roots of the terms data and capta make the distinction between constructivist and realist approaches clear. Capta is “taken” actively while data is assumed to be a “given” able to be recorded and observed. From this distinction, a world of differences arises. Humanistic inquiry acknowledges the situated, partial, and constitutive character of knowledge production, the recognition that knowledge is constructed, taken, not simply given as a natural representation of pre-existing fact.”
+
+As we start analyzing text, keep in mind how the decisions we make to tokenize and categorize *aid* our computation and *influence* our insights.
+
+Before we get started, let's load some necessary libraries. R, like many other open source languages, has a vibrant community of developers and analysts who distribute packages that facilitate specific tasks, like preprocessing text data.
+
+Run the block below to install necessary packages and then to load them into your session.
+
+```{r loading libraries, message=FALSE, warning=FALSE}
+
+#install.packages('tidyverse')
+#install.packages('tidytext')
+#install.packages('SnowballC')
+#install.packages('gutenbergr')
+#install.packages('gmodels')
+#install.packages('scales')
+
+library(tidyverse)
+library(tidytext)
+library(SnowballC)
+library(gutenbergr)
+library(gmodels)
+library(scales)
+
+```
+
+To make sure some of the more vital functions of the packages have been loaded properly, run the following code block:
+
+```{r testing packages}
+
+JD_capta <- c("Differences in the etymological roots of the terms data and capta make the distinction between constructivist and realist approaches clear. Capta is taken actively while data is assumed to be a given able to be recorded and observed. From this distinction, a world of differences arises. Humanistic inquiry acknowledges the situated, partial, and constitutive character of knowledge production, the recognition that knowledge is constructed, taken, not simply given as a natural representation of pre-existing fact.")
+
+JD_df <- tibble(JD_capta)
+
+JD_df %>% 
+  unnest_tokens(output = word, input = JD_capta, token = "words")
+
+JD_df %>%
+  unnest_tokens(output = trigram, input = JD_capta, token = "ngrams", n=3)
+
+# 
+
+
+```
+
