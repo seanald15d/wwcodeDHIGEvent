@@ -91,7 +91,9 @@ JD_df %>%
 
 
 
-# Now, try to tokenize the text by sentences (hint: use the file and help pane to find out more about the unnest_tokens function and its parameters)
+# Now, try to tokenize the text by sentences (hint: use the file and help pane to find out more about the unnest_tokens; run the line below to quickly access help)
+?unnest_tokens
+
 
 
 
