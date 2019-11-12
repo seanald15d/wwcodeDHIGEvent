@@ -91,11 +91,30 @@ JD_df %>%
 
 
 
+
+```
+
+```{r answer1, echo = FALSE, results = 'hide'}
+
+JD_df %>%
+  unnest_tokens(output = trigram, input = JD_capta, token = "ngrams", n = 3)
+
+```
+
+```{r help}
+
 # Now, try to tokenize the text by sentences (hint: use the file and help pane to find out more about the unnest_tokens; run the line below to quickly access help)
 ?unnest_tokens
 
 
 
+
+```
+
+```{r answer2, echo = FALSE, results = 'hide'}
+
+JD_df %>%
+  unnest_tokens(output = sentence, input = JD_capta, token = "sentences")
 
 ```
 
@@ -109,12 +128,12 @@ We'll start by tokenizing the text of Jane Austen using regex. Run the block of 
 
 #install.packages('janeaustenr')
 library(janeaustenr)
-d <- tibble(txt = prideprejudice)
+p_and_p <- tibble(txt = prideprejudice)
 
-w <- d %>%
+segments <- p_and_p %>%
   unnest_tokens(segment, txt, token = "regex", pattern = "-")
 
-head(w) # the first 6 segments based on our regex pattern
+head(segments) # outputs the first 6 segments based on our regex pattern
 
 ```
 
@@ -122,12 +141,21 @@ This split, while interesting, doesn't seem entirely useful. Novels like *Pride 
 
 ```{r breaking by chapter}
 
-chapters <- d %>%
+chapters <- p_and_p %>%
   unnest_tokens(chapter, txt, token = "regex", pattern = "")
 
 # output first 6 results below
 
 
+
+```
+
+```{r answer3, echo = FALSE, results = 'hide'}
+
+chapters <- p_and_p %>%
+  unnest_tokens(chapter, txt, token = "regex", pattern = "Chapter \\d+")
+
+head(chapters, 7)
 
 ```
 
@@ -146,11 +174,19 @@ jd_count <- JD_df %>%
 
 ```
 
+```{r answer4, echo = FALSE, results = 'hide'}
+
+pride_count <- p_and_p %>%
+  unnest_tokens(output = word, input = txt) %>%
+  count(word, sort = TRUE)
+
+```
+
 The word counts we've generated represent *raw frequencies*, meaning that they just tell us how many of each word type are found in each text analyzed. *Relative frequencies* give us similar information, but tell us specifically what percentage of the text in question each word token comprises.
 
 Recognizing this difference, calculate the relative frequencies for each word token and append that information to your current data frames (for the Johanna Drucker quotation word counts and the *Pride and Prejudice* counts). R, like most programming langauges has syntax unique to itself. To aid your efforts, we've provided an example of how you might add a new column like a relative freqruency one to an existing data frame.
 
-```{r}
+```{r relative frequencies}
 
 # example of adding a column to a data frame
 pride_count$new_column <- 1:nrow(pride_count)
@@ -166,6 +202,16 @@ pride_count <- pride_count[-3]
 
 
 
+
+```
+
+```{r answer5, echo = FALSE, results = 'hide'}
+
+pride_count$rel_freqs <- pride_count$n/sum(pride_count$n)
+jd_count$rel_freqs <- jd_count$n/sum(jd_count$n)
+
+pride_count <- pride_count[-2]
+jd_count <- jd_count[-2]
 
 ```
 
