@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Setting up and Gettings Started with R
+## Setting up and Getting Started with R
 
 Now that you have R and RStudio installed, let's do a few things to make sure that everything is working properly.
 
@@ -51,7 +51,7 @@ As we start analyzing text, keep in mind how the decisions we make to tokenize a
 
 Before we get going using some helpful tokenization packages, let's take a look at how we might tokenize text to make observations about word counts with basic R syntax - to see how easy it will be later but also to think about how some of the packages we will be using may be working behind the scenes.
 
-```{r base analysis}
+```{r base analysis, message = F, warning = F}
 
 # load relevant libraries
 library(gutenbergr)
@@ -110,6 +110,8 @@ axis(1,1:10, labels=sorted.moby.freqs.df$moby.words.v[1:10])
 
 ```
 
+### Working with Packages
+
 Before we get started, let's load some necessary libraries. R, like many other open source languages, has a vibrant community of developers and analysts who distribute packages that facilitate specific tasks, like preprocessing text data.
 
 Uncomment the install statements and run the block below to install necessary packages and then to load them into your session.
@@ -157,7 +159,7 @@ JD_df %>%
 
 ```
 
-```{r help}
+```{r help, message = F}
 
 # Now, try to tokenize the text by sentences (hint: use the file and help pane to find out more about the unnest_tokens; run the line below to quickly access help)
 ?unnest_tokens
@@ -255,7 +257,7 @@ jd_count$rel_freqs <- 100*jd_count$n/sum(jd_count$n)
 
 Now, let's plot some of these relative frequencies to gain a sense of what words each text seems to use, well, frequently!
 
-```{r plotting frequencies}
+```{r plotting frequencies, message = F, warning = F}
 
 # load a plotting library
 library(ggplot2)
@@ -286,9 +288,59 @@ jd_count %>%
 
 ```
 
-## Removing Stop Words and Stemming
+### Removing Stop Words and Stemming
 
-```{r}
+It's cool to compare top frequent words from our different textual data sets, but we get a lot of words that may or may not convey much of what our texts are about ("the", "of", "and"). We also may get different variations of the same words:
+
+```{r different variations example}
+
+pride_count[grep("choos\\w+", pride_count$word),]
+
+```
+
+While there may be some semantic difference between these variations of "choose," based on our research question, we could decide that we want to find a way to group all of these versions of "choose" together under one set of counts. To do both of these things, removing words that may or may not contribute much to meaning and to collapse multiple variations of words under one token, we'll get rid of stopwords from our sets and stem our word tokens.
+
+```{r stop words and stemming, message = F}
+
+# tokenizing text and removing stop words and stemming
+jd_count_ns_stem <- JD_df %>%
+  unnest_tokens(output = word, input = JD_capta) %>%
+  anti_join(stop_words)
+
+jd_count_ns_stem$word <- wordStem(jd_count_ns_stem$word)
+jd_count_ns_stem <- jd_count_ns_stem %>%
+  count(word, sort = TRUE)
+
+p_count_ns_stem <- p_and_p %>%
+  unnest_tokens(output = word, input = txt) %>%
+  anti_join(stop_words)
+
+p_count_ns_stem$word <- wordStem(p_count_ns_stem$word)
+p_count_ns_stem <- p_count_ns_stem %>%
+  count(word, sort = TRUE)
+
+# now find find all instances of "choos" in this new dataframe and compare with what we found earlier.
+
+
+
+
+```
+
+Finally, let's look at how removing stop words and stemming changes our relative frequency plots
+
+```{r changed rel freqs}
+
+# calculate relative frequencies as we did earlier
+
+
+
+# plot each 
+
+
+
+# looking at these two plots, what are some observations you have about top frequent words used?
+
+
 
 
 ```

@@ -25,3 +25,25 @@ jd_count$rel_freqs <- 100*jd_count$n/sum(jd_count$n)
 
 pride_count <- pride_count[-2]
 jd_count <- jd_count[-2]
+
+# calculating and plotting from ns and stem
+p_count_ns_stem$rel_freqs <- 100*p_count_ns_stem$n/sum(p_count_ns_stem$n)
+jd_count_ns_stem$rel_freqs <- 100*jd_count_ns_stem$n/sum(jd_count_ns_stem$n)
+
+p_count_ns_stem %>%
+  head(10) %>%
+  mutate(word = reorder(word,rel_freqs)) %>% #reorders word frame by n
+  ggplot(aes(word,rel_freqs),size = 7) +
+  geom_col() +
+  xlab(NULL) +
+  theme_minimal()+
+  coord_flip()
+
+jd_count_ns_stem %>%
+  head(10) %>%
+  mutate(word = reorder(word,rel_freqs)) %>% #reorders word frame by n
+  ggplot(aes(word,rel_freqs),size = 7) +
+  geom_col() +
+  xlab(NULL) +
+  theme_minimal()+
+  coord_flip()
