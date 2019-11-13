@@ -94,13 +94,6 @@ JD_df %>%
 
 ```
 
-```{r answer1, echo = FALSE, results = 'hide'}
-
-JD_df %>%
-  unnest_tokens(output = trigram, input = JD_capta, token = "ngrams", n = 3)
-
-```
-
 ```{r help}
 
 # Now, try to tokenize the text by sentences (hint: use the file and help pane to find out more about the unnest_tokens; run the line below to quickly access help)
@@ -108,13 +101,6 @@ JD_df %>%
 
 
 
-
-```
-
-```{r answer2, echo = FALSE, results = 'hide'}
-
-JD_df %>%
-  unnest_tokens(output = sentence, input = JD_capta, token = "sentences")
 
 ```
 
@@ -150,15 +136,6 @@ chapters <- p_and_p %>%
 
 ```
 
-```{r answer3, echo = FALSE, results = 'hide'}
-
-chapters <- p_and_p %>%
-  unnest_tokens(chapter, txt, token = "regex", pattern = "Chapter \\d+")
-
-head(chapters, 7)
-
-```
-
 ## Comparing Data and Making Observations
 
 ```{r comparing and observing}
@@ -171,14 +148,6 @@ jd_count <- JD_df %>%
 # generate a raw count of word tokens in Pride and Prejudice
 
 
-
-```
-
-```{r answer4, echo = FALSE, results = 'hide'}
-
-pride_count <- p_and_p %>%
-  unnest_tokens(output = word, input = txt) %>%
-  count(word, sort = TRUE)
 
 ```
 
@@ -205,16 +174,6 @@ pride_count <- pride_count[-3]
 
 ```
 
-```{r answer5, echo = FALSE, results = 'hide'}
-
-pride_count$rel_freqs <- pride_count$n/sum(pride_count$n)
-jd_count$rel_freqs <- jd_count$n/sum(jd_count$n)
-
-pride_count <- pride_count[-2]
-jd_count <- jd_count[-2]
-
-```
-
 Now, let's plot some of these relative frequencies to gain a sense of what words each text seems to use, well, frequently!
 
 ```{r plotting frequencies}
@@ -224,7 +183,7 @@ library(ggplot2)
 
 # plot each 
 pride_count %>%
-  top_n(10) %>%
+  head(10) %>%
   mutate(word = reorder(word,rel_freqs)) %>% #reorders word frame by n
   ggplot(aes(word,rel_freqs),size = 7) +
   geom_col() +
@@ -233,7 +192,7 @@ pride_count %>%
   coord_flip()
 
 jd_count %>%
-  top_n(10) %>%
+  head(10) %>%
   mutate(word = reorder(word,rel_freqs)) %>% #reorders word frame by n
   ggplot(aes(word,rel_freqs),size = 7) +
   geom_col() +
@@ -250,5 +209,9 @@ jd_count %>%
 
 ## Removing Stop Words and Stemming
 
+```{r}
+
+
+```
 
 
