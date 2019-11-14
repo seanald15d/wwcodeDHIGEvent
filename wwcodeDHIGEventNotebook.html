@@ -488,8 +488,7 @@ library(tidyverse)
 library(tidytext)
 library(SnowballC)
 library(gutenbergr)
-library(gmodels)
-library(scales)</code></pre>
+library(gmodels)</code></pre>
 <p>To make sure some of the more vital functions of the packages have been loaded properly, run the following code block:</p>
 <pre class="r"><code>JD_capta &lt;- c(&quot;Differences in the etymological roots of the terms data and capta make the distinction between constructivist and realist approaches clear. Capta is taken actively while data is assumed to be a given able to be recorded and observed. From this distinction, a world of differences arises. Humanistic inquiry acknowledges the situated, partial, and constitutive character of knowledge production, the recognition that knowledge is constructed, taken, not simply given as a natural representation of pre-existing fact.&quot;)
 
@@ -635,18 +634,202 @@ p_count_ns_stem$word &lt;- wordStem(p_count_ns_stem$word)
 p_count_ns_stem &lt;- p_count_ns_stem %&gt;%
   count(word, sort = TRUE)
 
-# now find find all instances of &quot;choos&quot; in this new dataframe and compare with what we found earlier.</code></pre>
+# now find find all instances of &quot;choose&quot; in this new dataframe and compare with what we found earlier.</code></pre>
 <p>Finally, let’s look at how removing stop words and stemming changes our relative frequency plots</p>
 <pre class="r"><code># calculate relative frequencies as we did earlier
 
 
 
-# plot each 
+# plot each
 
 
 
 # looking at these two plots, what are some observations you have about top frequent words used?</code></pre>
+<p>So plotting top frequent words is nice and can give us an idea of what an author’s focus may be, but there are so many more things we can do with text data. An important thing to note, though, is that most text mining projects begin with preprocessing: making decisions about how to tokenize text, what words and/or characters to exclude (if any), and about how to account for words and features surrounding word use.</p>
 </div>
+</div>
+<div id="an-example-machine-learning-application" class="section level2">
+<h2>An Example Machine Learning Application</h2>
+<p>Let’s say we’re at a fancy party, and someone has the audacity to spark a debate concerning the superiority of dog or cat owners. Everyone scoffs in disbelief, but they all secretly want to weigh in. The conversation gets so heated that the nefarious ne’er do well who started it finally says, &quot;Well, I personally like cats more, but I know I cannot reach the dog people in the room because they just seem to speak a different language.</p>
+<p>How could Mr. Cat-Arguer say such a thing? How could we verify his salacious surmisal?</p>
+<p>First, let’s break down the question:</p>
+<ol style="list-style-type: decimal">
+<li>Do cat and dog people speak different langauges?</li>
+</ol>
+<p>How could we measure such a phenomenon? One way is to gather a corpus of texts related to dog and cat fandom and to do work similar to what we did earlier.</p>
+<p>For this exercise, we’ll be using Reddit and R’s RedditExtractoR package. Run the lines below to install this package and load it into your session:</p>
+<pre class="r"><code>#install.packages(&#39;RedditExtractoR&#39;)
+library(RedditExtractoR)</code></pre>
+<p>Now, let’s pull some data.</p>
+<pre class="r"><code># searching reddit links for cats and dogs
+cat_links &lt;- reddit_urls(
+  search_terms = &quot;cats&quot;,
+  page_threshold = 1
+)
+
+dog_links &lt;- reddit_urls(
+  search_terms = &quot;dogs&quot;,
+  page_threshold = 1
+)
+
+# look at each data frame. The subreddit category tells you on what channel
+# each post (and its comments) lives. What subreddit and post title do you
+# think will lead to a nice comparison? For now (and because things will
+# change by the workshop), I&#39;ve chosen some that may not apply later...
+
+cat_links &lt;- subset(cat_links, subreddit == &#39;cats&#39;)
+
+dog_links &lt;- subset(dog_links, subreddit == &#39;dogs&#39;)
+
+# write function to apply to links
+link_getter &lt;- function(x){
+  thread &lt;- reddit_content(x[5])
+  return(thread)
+}
+
+# call function applied to each row of df and bind resulting list of dfs
+# into single df
+cat_thread &lt;- apply(cat_links, MARGIN = 1, link_getter)
+cat_thread.df &lt;- bind_rows(cat_thread, .id = &quot;column_label&quot;)
+
+# repeat for dogs
+dog_thread &lt;- apply(dog_links, MARGIN = 1, link_getter)
+dog_thread.df &lt;- bind_rows(dog_thread, .id = &quot;column_label&quot;)
+
+# let&#39;s randomize our data and extract the same number of observations from each df
+set.seed(123)
+r_cat_thread.df &lt;- cat_thread.df[sample(1:nrow(cat_thread.df)),]
+r_dog_thread.df &lt;- dog_thread.df[sample(1:nrow(dog_thread.df)),]
+
+trimmed_r_cat_thread.df &lt;- r_cat_thread.df[1:2000,]
+trimmed_r_dog_thread.df &lt;- r_dog_thread.df[1:2000,]</code></pre>
+<p>Now that we have our data somewhat preprocessed, let’s first make some observations about frequency and term use.</p>
+<pre class="r"><code># unnest tokens
+cat_counts &lt;- trimmed_r_cat_thread.df %&gt;%
+  unnest_tokens(output = word, input = comment, token = &quot;words&quot;) %&gt;%
+  anti_join(stop_words) %&gt;%
+  count(word, sort = T)
+
+dog_counts &lt;- trimmed_r_dog_thread.df %&gt;%
+  unnest_tokens(output = word, input = comment, token = &quot;words&quot;) %&gt;%
+  anti_join(stop_words) %&gt;%
+  count(word, sort = T)
+
+# comparing terms shared and distinct between groups
+comparison_all &lt;-
+  cat_counts %&gt;% full_join(dog_counts, by = &quot;word&quot;) %&gt;%
+  mutate(c_in = if_else(is.na(n.x), 0, 1),
+  d_in = if_else(is.na(n.y), 0, 1))
+with(comparison_all, CrossTable(c_in, d_in, prop.chisq = F))</code></pre>
+<pre><code>## 
+##  
+##    Cell Contents
+## |-------------------------|
+## |                       N |
+## |           N / Row Total |
+## |           N / Col Total |
+## |         N / Table Total |
+## |-------------------------|
+## 
+##  
+## Total Observations in Table:  9752 
+## 
+##  
+##              | d_in 
+##         c_in |         0 |         1 | Row Total | 
+## -------------|-----------|-----------|-----------|
+##            0 |         0 |      5775 |      5775 | 
+##              |     0.000 |     1.000 |     0.592 | 
+##              |     0.000 |     0.715 |           | 
+##              |     0.000 |     0.592 |           | 
+## -------------|-----------|-----------|-----------|
+##            1 |      1672 |      2305 |      3977 | 
+##              |     0.420 |     0.580 |     0.408 | 
+##              |     1.000 |     0.285 |           | 
+##              |     0.171 |     0.236 |           | 
+## -------------|-----------|-----------|-----------|
+## Column Total |      1672 |      8080 |      9752 | 
+##              |     0.171 |     0.829 |           | 
+## -------------|-----------|-----------|-----------|
+## 
+## </code></pre>
+<p>This table tells us that there are 8091 word types in the dog thread, and 2305 (29%) of these types appear in the cat thread. Conversely, there are 3977 word types that appear in the cat thread, and 2305 (58%) of them appear in the dog thread.</p>
+<p>What we’ve found can be summarized as follows: If a word is randomly selected in one of the dog thread comments, then there is a 30% chance that it will also appear in the cat thread comments. This is also called the conditional probability that the word appears in the cat thread comments <em>given that</em> it appears in the dog thread comments.</p>
+<p>What does such a finding <em>mean</em> though? One observation we can make is that the dog lovers seem to use more unique word types than the cat lovers. The raw count of unique word types alone, though, does not give us a solid point of comparison because the dog group may just use way more words in general.</p>
+<p>To account for this, we could use a statistic called Type Token Ratio. To calculate this, we take the total number of token types and divide that by the total number of tokens used.</p>
+<pre class="r"><code>ttr_cat &lt;- nrow(cat_counts)/sum(cat_counts$n)
+ttr_dog &lt;- nrow(dog_counts)/sum(dog_counts$n)
+
+# what does our calculation reveal? What accounts for the results we see?</code></pre>
+<p>While we could do so much more with Type Token Ratio and other summary statistics, we want to conclude the instructional portion of our workshop by speaking about the process of training a classifier to use word types to answer our initial question: Do cat and dog people speak different langauges?</p>
+<p>We’ll begin by installing and loading some more libraries and then adjusting our data a little more for ease of comparison.</p>
+<pre class="r"><code># load tm package
+library(tm)
+
+# adjust data to add unique ids, combine, and shuffle
+trimmed_r_cat_thread.df$u_id &lt;- 1:nrow(trimmed_r_cat_thread.df)
+trimmed_r_dog_thread.df$u_id &lt;- (nrow(trimmed_r_dog_thread.df)+1):(2*nrow(trimmed_r_dog_thread.df))
+cat_dog &lt;- rbind(trimmed_r_cat_thread.df, trimmed_r_dog_thread.df)
+
+set.seed(1234)
+cat_dog &lt;- cat_dog[sample(1:nrow(cat_dog)),]
+
+# create class factor of subreddit
+cat_dog$subreddit &lt;- as.factor(cat_dog$subreddit)</code></pre>
+<p>The next step of the process will help us convert our text data into a document term matrix, which is a fancy way of describing an object with columns of word types and rows based on documents in our corpus (the comment objects). This information about presence of word types in each comment object will help our classifier make predictions about whether a comment comes from the cat set or the dog set.</p>
+<p>Let’s put our tm package to use to remove unnecessary characters:</p>
+<pre class="r"><code># Creating the document-term matrix for train data
+doc.vec_train &lt;- VectorSource(cat_dog$comment)
+doc.corpus_train &lt;- Corpus(doc.vec_train)
+doc.corpus_train &lt;- tm_map(doc.corpus_train , tolower)
+doc.corpus_train &lt;- tm_map(doc.corpus_train, removePunctuation)
+doc.corpus_train &lt;- tm_map(doc.corpus_train, removeNumbers)
+doc.corpus_train &lt;- tm_map(doc.corpus_train, removeWords, stopwords(&quot;english&quot;))
+doc.corpus_train &lt;- tm_map(doc.corpus_train, stripWhitespace)
+
+DTM_all &lt;- DocumentTermMatrix(doc.corpus_train)
+
+# removing sparse terms
+DTM_all &lt;- removeSparseTerms(DTM_all, .999)
+
+# convert train data to df
+df_dtm &lt;- as.data.frame(as.matrix(DTM_all))
+
+# add dependent variable
+df_dtm$subreddit &lt;- cat_dog$subreddit</code></pre>
+<p>Okay! Now that we have a document term matrix and our dependent variables in one place, let’s go ahead train a classifier and get some performance results! We’ll use the caret package to do some k-fold cross validation, and we’ll use a Naive Bayes classifier.</p>
+<pre class="r"><code># load caret package
+#install.packages(&#39;caret&#39;)
+#install.packages(&#39;e1071&#39;)
+library(caret)
+library(e1071)
+
+# create 10 folds for model validation
+folds &lt;- createFolds(df_dtm$subreddit, k = 10)
+
+# train classifier on each fold
+word_bayes_cv &lt;- lapply(folds, function(x){
+  training_fold &lt;- df_dtm[-x, ]
+  test_fold &lt;- df_dtm[x, ]
+  classifier &lt;- naiveBayes(x = training_fold[, -ncol(df_dtm)],
+                           y = training_fold$subreddit)
+  y_pred &lt;- predict(classifier, newdata = test_fold[-ncol(df_dtm)])
+  cm &lt;- table(test_fold[, ncol(df_dtm)], y_pred)
+  print(cm)
+  accuracy = (cm[1,1] + cm[2,2])/(cm[1,1] + cm[2,2] + cm[1,2] + cm[2,1])
+  return(accuracy)
+})
+
+# observing results
+acc_df &lt;- as_tibble(do.call(rbind, word_bayes_cv))
+acc_df
+mean(acc_df$V1)</code></pre>
+</div>
+<div id="talking-about-results-and-concluding" class="section level2">
+<h2>Talking about results and concluding</h2>
+<p>In my run at this set, we can see that, with word features alone, our Naive Bayes classifier does not achieve a high accuracy rate for separating dog lovers from our Reddit dataset from cat lovers. What we might be able to conclude, then, is that these two groups, unlike Mr. Argument-Starter suggested, speak a similar language…or at least use similar words. As we noticed earlier, 60% of the token types appearing in the cat comments also appeared in the dog comments. While the dog commenters used more word types (and more words in general) than the cat commenters, perhaps we could check to see if many of these words appeared sparsely.</p>
+<p>So what’s next? We could reconsider the types of characters we remove from our word features and perhaps adjust some of our classifier’s default parameters.</p>
+<p>We could also shift our analytical focus from observations about types of words used to observations <em>around</em> language. Our original Reddit data set comes with a lot of metadata (score, up_vote_prop, controversiality). We could also apply a type token ratio metric to each individual comment in our set to see if a trend exists among cat lovers or dog lovers. We could also do some work with sentiment analysis to discover if cat and dog lovers evoke similar feelings when discussing their animals of choice. As a side note, it would be fun to see how cat lovers talk about dogs and vice versa.</p>
 </div>
 
 
