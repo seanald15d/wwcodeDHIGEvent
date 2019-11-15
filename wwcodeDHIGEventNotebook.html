@@ -750,8 +750,8 @@ with(comparison_all, CrossTable(c_in, d_in, prop.chisq = F))</code></pre>
 ## -------------|-----------|-----------|-----------|
 ## 
 ## </code></pre>
-<p>This table tells us that there are 8091 word types in the dog thread, and 2305 (29%) of these types appear in the cat thread. Conversely, there are 3977 word types that appear in the cat thread, and 2305 (58%) of them appear in the dog thread.</p>
-<p>What we’ve found can be summarized as follows: If a word is randomly selected in one of the dog thread comments, then there is a 30% chance that it will also appear in the cat thread comments. This is also called the conditional probability that the word appears in the cat thread comments <em>given that</em> it appears in the dog thread comments.</p>
+<p>This table tells us that there are 8174 word types in the dog thread, and 2386 (29%) of these types appear in the cat thread. Conversely, there are 4138 word types that appear in the cat thread, and 2386 (58%) of them appear in the dog thread.</p>
+<p>What we’ve found can be summarized as follows: If a word is randomly selected in one of the dog thread comments, then there is a 29% chance that it will also appear in the cat thread comments. This is also called the conditional probability that the word appears in the cat thread comments <em>given that</em> it appears in the dog thread comments.</p>
 <p>What does such a finding <em>mean</em> though? One observation we can make is that the dog lovers seem to use more unique word types than the cat lovers. The raw count of unique word types alone, though, does not give us a solid point of comparison because the dog group may just use way more words in general.</p>
 <p>To account for this, we could use a statistic called Type Token Ratio. To calculate this, we take the total number of token types and divide that by the total number of tokens used.</p>
 <pre class="r"><code>ttr_cat &lt;- nrow(cat_counts)/sum(cat_counts$n)
