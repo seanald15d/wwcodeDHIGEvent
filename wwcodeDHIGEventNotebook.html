@@ -417,6 +417,8 @@ x^y # r can raise to a power</code></pre>
 <h3>Text Analysis with Base R</h3>
 <p>Before we get going using some helpful tokenization packages, let’s take a look at how we might tokenize text to make observations about word counts with basic R syntax - to see how easy it will be later but also to think about how some of the packages we will be using may be working behind the scenes.</p>
 <pre class="r"><code># load relevant libraries
+#install.packages(&#39;gutenbergr&#39;) # uncomment and run these first two lines if packages do not load
+#install.packages(&#39;dplyr&#39;)
 library(gutenbergr)
 library(dplyr)
 
@@ -480,14 +482,11 @@ axis(1,1:10, labels=sorted.moby.freqs.df$moby.words.v[1:10])</code></pre>
 <pre class="r"><code>#install.packages(&#39;tidyverse&#39;)
 #install.packages(&#39;tidytext&#39;)
 #install.packages(&#39;SnowballC&#39;)
-#install.packages(&#39;gutenbergr&#39;)
 #install.packages(&#39;gmodels&#39;)
-#install.packages(&#39;scales&#39;)
 
 library(tidyverse)
 library(tidytext)
 library(SnowballC)
-library(gutenbergr)
 library(gmodels)</code></pre>
 <p>To make sure some of the more vital functions of the packages have been loaded properly, run the following code block:</p>
 <pre class="r"><code>JD_capta &lt;- c(&quot;Differences in the etymological roots of the terms data and capta make the distinction between constructivist and realist approaches clear. Capta is taken actively while data is assumed to be a given able to be recorded and observed. From this distinction, a world of differences arises. Humanistic inquiry acknowledges the situated, partial, and constitutive character of knowledge production, the recognition that knowledge is constructed, taken, not simply given as a natural representation of pre-existing fact.&quot;)
@@ -650,7 +649,7 @@ p_count_ns_stem &lt;- p_count_ns_stem %&gt;%
 </div>
 <div id="an-example-machine-learning-application" class="section level2">
 <h2>An Example Machine Learning Application</h2>
-<p>Let’s say we’re at a fancy party, and someone has the audacity to spark a debate concerning the superiority of dog or cat owners. Everyone scoffs in disbelief, but they all secretly want to weigh in. The conversation gets so heated that the nefarious ne’er do well who started it finally says, &quot;Well, I personally like cats more, but I know I cannot reach the dog people in the room because they just seem to speak a different language.</p>
+<p>Let’s say we’re at a fancy party, and someone has the audacity to spark a debate concerning the superiority of dog or cat owners. Everyone scoffs in disbelief, but they all secretly want to weigh in. The conversation gets so heated that the nefarious ne’er do well who started it finally says, “Well, I personally like cats more, but I know I cannot reach the dog people in the room because they just seem to speak a different language.”</p>
 <p>How could Mr. Cat-Arguer say such a thing? How could we verify his salacious surmisal?</p>
 <p>First, let’s break down the question:</p>
 <ol style="list-style-type: decimal">
@@ -732,29 +731,29 @@ with(comparison_all, CrossTable(c_in, d_in, prop.chisq = F))</code></pre>
 ## |-------------------------|
 ## 
 ##  
-## Total Observations in Table:  9752 
+## Total Observations in Table:  9883 
 ## 
 ##  
 ##              | d_in 
 ##         c_in |         0 |         1 | Row Total | 
 ## -------------|-----------|-----------|-----------|
-##            0 |         0 |      5775 |      5775 | 
-##              |     0.000 |     1.000 |     0.592 | 
-##              |     0.000 |     0.715 |           | 
-##              |     0.000 |     0.592 |           | 
+##            0 |         0 |      5764 |      5764 | 
+##              |     0.000 |     1.000 |     0.583 | 
+##              |     0.000 |     0.707 |           | 
+##              |     0.000 |     0.583 |           | 
 ## -------------|-----------|-----------|-----------|
-##            1 |      1672 |      2305 |      3977 | 
-##              |     0.420 |     0.580 |     0.408 | 
-##              |     1.000 |     0.285 |           | 
-##              |     0.171 |     0.236 |           | 
+##            1 |      1733 |      2386 |      4119 | 
+##              |     0.421 |     0.579 |     0.417 | 
+##              |     1.000 |     0.293 |           | 
+##              |     0.175 |     0.241 |           | 
 ## -------------|-----------|-----------|-----------|
-## Column Total |      1672 |      8080 |      9752 | 
-##              |     0.171 |     0.829 |           | 
+## Column Total |      1733 |      8150 |      9883 | 
+##              |     0.175 |     0.825 |           | 
 ## -------------|-----------|-----------|-----------|
 ## 
 ## </code></pre>
-<p>This table tells us that there are 8080 word types in the dog thread, and 2305 (29%) of these types appear in the cat thread. Conversely, there are 3977 word types that appear in the cat thread, and 2305 (58%) of them appear in the dog thread.</p>
-<p>What we’ve found can be summarized as follows: If a word is randomly selected in one of the dog thread comments, then there is a 30% chance that it will also appear in the cat thread comments. This is also called the conditional probability that the word appears in the cat thread comments <em>given that</em> it appears in the dog thread comments.</p>
+<p>This table tells us that there are 8150 word types in the dog thread, and 2386 (29%) of these types appear in the cat thread. Conversely, there are 4119 word types that appear in the cat thread, and 2386 (58%) of them appear in the dog thread.</p>
+<p>What we’ve found can be summarized as follows: If a word is randomly selected in one of the dog thread comments, then there is a 29% chance that it will also appear in the cat thread comments. This is also called the conditional probability that the word appears in the cat thread comments <em>given that</em> it appears in the dog thread comments.</p>
 <p>What does such a finding <em>mean</em> though? One observation we can make is that the dog lovers seem to use more unique word types than the cat lovers. The raw count of unique word types alone, though, does not give us a solid point of comparison because the dog group may just use way more words in general.</p>
 <p>To account for this, we could use a statistic called Type Token Ratio. To calculate this, we take the total number of token types and divide that by the total number of tokens used.</p>
 <pre class="r"><code>ttr_cat &lt;- nrow(cat_counts)/sum(cat_counts$n)
@@ -764,6 +763,7 @@ ttr_dog &lt;- nrow(dog_counts)/sum(dog_counts$n)
 <p>While we could do so much more with Type Token Ratio and other summary statistics, we want to conclude the instructional portion of our workshop by speaking about the process of training a classifier to use word types to answer our initial question: Do cat and dog people speak different langauges?</p>
 <p>We’ll begin by installing and loading some more libraries and then adjusting our data a little more for ease of comparison.</p>
 <pre class="r"><code># load tm package
+#install.packages(&#39;tm&#39;)
 library(tm)
 
 # adjust data to add unique ids, combine, and shuffle
@@ -796,7 +796,7 @@ DTM_all &lt;- removeSparseTerms(DTM_all, .999)
 df_dtm &lt;- as.data.frame(as.matrix(DTM_all))
 
 # add dependent variable
-df_dtm$subreddit &lt;- cat_dog$subreddit</code></pre>
+df_dtm$Subreddit &lt;- cat_dog$subreddit</code></pre>
 <p>Okay! Now that we have a document term matrix and our dependent variables in one place, let’s go ahead train a classifier and get some performance results! We’ll use the caret package to do some k-fold cross validation, and we’ll use a Naive Bayes classifier.</p>
 <pre class="r"><code># load caret package
 #install.packages(&#39;caret&#39;)
@@ -812,10 +812,9 @@ word_bayes_cv &lt;- lapply(folds, function(x){
   training_fold &lt;- df_dtm[-x, ]
   test_fold &lt;- df_dtm[x, ]
   classifier &lt;- naiveBayes(x = training_fold[, -ncol(df_dtm)],
-                           y = training_fold$subreddit)
+                           y = training_fold$Subreddit)
   y_pred &lt;- predict(classifier, newdata = test_fold[-ncol(df_dtm)])
   cm &lt;- table(test_fold[, ncol(df_dtm)], y_pred)
-  print(cm)
   accuracy = (cm[1,1] + cm[2,2])/(cm[1,1] + cm[2,2] + cm[1,2] + cm[2,1])
   return(accuracy)
 })
@@ -827,7 +826,7 @@ mean(acc_df$V1)</code></pre>
 </div>
 <div id="talking-about-results-and-concluding" class="section level2">
 <h2>Talking about results and concluding</h2>
-<p>In my run at this set, we can see that, with word features alone, our Naive Bayes classifier does not achieve a high accuracy rate for separating dog lovers from our Reddit dataset from cat lovers. What we might be able to conclude, then, is that these two groups, unlike Mr. Argument-Starter suggested, speak a similar language…or at least use similar words. As we noticed earlier, 60% of the token types appearing in the cat comments also appeared in the dog comments. While the dog commenters used more word types (and more words in general) than the cat commenters, perhaps we could check to see if many of these words appeared sparsely.</p>
+<p>In our run at this set, we can see that, with word features alone, our Naive Bayes classifier does not achieve a high accuracy rate for separating dog lovers from our Reddit dataset from cat lovers. What we might be able to conclude, then, is that these two groups, unlike Mr. Argument-Starter suggested, speak a similar language…or at least use similar words. As we noticed earlier, 60% of the token types appearing in the cat comments also appeared in the dog comments. While the dog commenters used more word types (and more words in general) than the cat commenters, perhaps we could check to see if many of these words appeared sparsely.</p>
 <p>So what’s next? We could reconsider the types of characters we remove from our word features and perhaps adjust some of our classifier’s default parameters.</p>
 <p>We could also shift our analytical focus from observations about types of words used to observations <em>around</em> language. Our original Reddit data set comes with a lot of metadata (score, up_vote_prop, controversiality). We could also apply a type token ratio metric to each individual comment in our set to see if a trend exists among cat lovers or dog lovers. We could also do some work with sentiment analysis to discover if cat and dog lovers evoke similar feelings when discussing their animals of choice. As a side note, it would be fun to see how cat lovers talk about dogs and vice versa.</p>
 </div>
