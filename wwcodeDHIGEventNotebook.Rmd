@@ -22,7 +22,8 @@ Congratulations, you've just run your first piece of R code! The setwd() command
 Now let's do one last check to ensure that R is working properly. Go ahead and run the chunk of code below:
 
 ```{r math}
-
+# if this block does not run, execute the line below
+#install.packages('knitr')
 1+1 # r can do the math
 2*2 # r can also do the comment
 459689230409/9034953849723
