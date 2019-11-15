@@ -13,17 +13,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Now that you have R and RStudio installed, let's do a few things to make sure that everything is working properly.
 
-First, find the "Session" menu tab at the top of the window (5 menu tabs to the right of "File."). Click "Session" and then navigate through "Set Working Directory" to "Choose Directory." Follow the file chooser dialog and choose/make a directory that you want to work with for the workshop today. When you have finished this step, look in the console pane of RStudio. You should see something like this:
-
-> setwd("~/folderYouChose")
-
-Congratulations, you've just run your first piece of R code! The setwd() command that R produced is a built-in function that sets your working directory to a folder of your choice. This can be an important step for when you are writing to and reading from files for a project you may be working on.
-
-Now let's do one last check to ensure that R is working properly. Go ahead and run the chunk of code below:
+Go ahead and run the chunk of code below:
 
 ```{r math}
 # if this block does not run, execute the line below
 #install.packages('knitr')
+
 1+1 # r can do the math
 2*2 # r can also do the comment
 459689230409/9034953849723
@@ -510,6 +505,19 @@ df_dtm$Subreddit <- cat_dog$subreddit
 ```
 
 Okay! Now that we have a document term matrix and our dependent variables in one place, let's go ahead train a classifier and get some performance results! We'll use the caret package to do some k-fold cross validation, and we'll use a Naive Bayes classifier.
+
+According to Jason Brownlee, k-fold cross validation generally follows this procedure:
+
+1. Shuffle the dataset randomly.
+2. Split the dataset into k groups
+3. For each unique group:
+  1. Take the group as a hold out or test data set
+  2. Take the remaining groups as a training data set
+  3. Fit a model on the training set and evaluate it on the test set
+  4. Retain the evaluation score and discard the model
+4. Summarize the skill of the model using the sample of model evaluation scores
+
+Using R's caret package, we will create a list of k folds and measure how our model does using each fold to test it.
 
 ```{r train and run, warning = F, message = F, results = 'hide'}
 

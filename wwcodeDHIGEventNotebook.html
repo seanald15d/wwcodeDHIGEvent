@@ -384,13 +384,11 @@ $(document).ready(function () {
 <div id="setting-up-and-getting-started-with-r" class="section level2">
 <h2>Setting up and Getting Started with R</h2>
 <p>Now that you have R and RStudio installed, let’s do a few things to make sure that everything is working properly.</p>
-<p>First, find the “Session” menu tab at the top of the window (5 menu tabs to the right of “File.”). Click “Session” and then navigate through “Set Working Directory” to “Choose Directory.” Follow the file chooser dialog and choose/make a directory that you want to work with for the workshop today. When you have finished this step, look in the console pane of RStudio. You should see something like this:</p>
-<blockquote>
-<p>setwd(“~/folderYouChose”)</p>
-</blockquote>
-<p>Congratulations, you’ve just run your first piece of R code! The setwd() command that R produced is a built-in function that sets your working directory to a folder of your choice. This can be an important step for when you are writing to and reading from files for a project you may be working on.</p>
-<p>Now let’s do one last check to ensure that R is working properly. Go ahead and run the chunk of code below:</p>
-<pre class="r"><code>1+1 # r can do the math</code></pre>
+<p>Go ahead and run the chunk of code below:</p>
+<pre class="r"><code># if this block does not run, execute the line below
+#install.packages(&#39;knitr&#39;)
+
+1+1 # r can do the math</code></pre>
 <pre><code>## [1] 2</code></pre>
 <pre class="r"><code>2*2 # r can also do the comment</code></pre>
 <pre><code>## [1] 4</code></pre>
@@ -731,29 +729,29 @@ with(comparison_all, CrossTable(c_in, d_in, prop.chisq = F))</code></pre>
 ## |-------------------------|
 ## 
 ##  
-## Total Observations in Table:  9738 
+## Total Observations in Table:  9926 
 ## 
 ##  
 ##              | d_in 
 ##         c_in |         0 |         1 | Row Total | 
 ## -------------|-----------|-----------|-----------|
-##            0 |         0 |      5808 |      5808 | 
-##              |     0.000 |     1.000 |     0.596 | 
-##              |     0.000 |     0.720 |           | 
-##              |     0.000 |     0.596 |           | 
+##            0 |         0 |      5788 |      5788 | 
+##              |     0.000 |     1.000 |     0.583 | 
+##              |     0.000 |     0.708 |           | 
+##              |     0.000 |     0.583 |           | 
 ## -------------|-----------|-----------|-----------|
-##            1 |      1676 |      2254 |      3930 | 
-##              |     0.426 |     0.574 |     0.404 | 
-##              |     1.000 |     0.280 |           | 
-##              |     0.172 |     0.231 |           | 
+##            1 |      1752 |      2386 |      4138 | 
+##              |     0.423 |     0.577 |     0.417 | 
+##              |     1.000 |     0.292 |           | 
+##              |     0.177 |     0.240 |           | 
 ## -------------|-----------|-----------|-----------|
-## Column Total |      1676 |      8062 |      9738 | 
-##              |     0.172 |     0.828 |           | 
+## Column Total |      1752 |      8174 |      9926 | 
+##              |     0.177 |     0.823 |           | 
 ## -------------|-----------|-----------|-----------|
 ## 
 ## </code></pre>
-<p>This table tells us that there are 8062 word types in the dog thread, and 2254 (28%) of these types appear in the cat thread. Conversely, there are 3930 word types that appear in the cat thread, and 2254 (57%) of them appear in the dog thread.</p>
-<p>What we’ve found can be summarized as follows: If a word is randomly selected in one of the dog thread comments, then there is a 28% chance that it will also appear in the cat thread comments. This is also called the conditional probability that the word appears in the cat thread comments <em>given that</em> it appears in the dog thread comments.</p>
+<p>This table tells us that there are 8091 word types in the dog thread, and 2305 (29%) of these types appear in the cat thread. Conversely, there are 3977 word types that appear in the cat thread, and 2305 (58%) of them appear in the dog thread.</p>
+<p>What we’ve found can be summarized as follows: If a word is randomly selected in one of the dog thread comments, then there is a 30% chance that it will also appear in the cat thread comments. This is also called the conditional probability that the word appears in the cat thread comments <em>given that</em> it appears in the dog thread comments.</p>
 <p>What does such a finding <em>mean</em> though? One observation we can make is that the dog lovers seem to use more unique word types than the cat lovers. The raw count of unique word types alone, though, does not give us a solid point of comparison because the dog group may just use way more words in general.</p>
 <p>To account for this, we could use a statistic called Type Token Ratio. To calculate this, we take the total number of token types and divide that by the total number of tokens used.</p>
 <pre class="r"><code>ttr_cat &lt;- nrow(cat_counts)/sum(cat_counts$n)
@@ -800,6 +798,18 @@ df_dtm &lt;- as.data.frame(as.matrix(DTM_all))
 # add dependent variable
 df_dtm$Subreddit &lt;- cat_dog$subreddit</code></pre>
 <p>Okay! Now that we have a document term matrix and our dependent variables in one place, let’s go ahead train a classifier and get some performance results! We’ll use the caret package to do some k-fold cross validation, and we’ll use a Naive Bayes classifier.</p>
+<p>According to Jason Brownlee, k-fold cross validation generally follows this procedure:</p>
+<ol style="list-style-type: decimal">
+<li>Shuffle the dataset randomly.</li>
+<li>Split the dataset into k groups</li>
+<li>For each unique group:</li>
+<li>Take the group as a hold out or test data set</li>
+<li>Take the remaining groups as a training data set</li>
+<li>Fit a model on the training set and evaluate it on the test set</li>
+<li>Retain the evaluation score and discard the model</li>
+<li>Summarize the skill of the model using the sample of model evaluation scores</li>
+</ol>
+<p>Using R’s caret package, we will create a list of k folds and measure how our model does using each fold to test it.</p>
 <pre class="r"><code># load caret package
 #install.packages(&#39;caret&#39;)
 #install.packages(&#39;e1071&#39;)
