@@ -22,3 +22,5 @@ The presentation goes over ideas about data analytics and R basics.
 The r markdown document in this repo includes examples and activities for workshop participants to explore.
 
 When we get to the part of the workshop where we will be using the r markdown document, if you have git on your machine, choose "create new project" in RStudio and choose to do so from version control. Select Git and copy and paste the repo address. RStudio will clone the repo for you. Once cloned, open the wwcodeDHIGEventNotebook.Rmd file.
+
+If you do not have Git, you can also download the project from here. We can walk through setting your working directory in RStudio to the project directory.
