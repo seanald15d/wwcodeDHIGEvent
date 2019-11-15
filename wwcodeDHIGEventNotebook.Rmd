@@ -486,8 +486,10 @@ Let's put our tm package to use to remove unnecessary characters:
 
 # Creating the document-term matrix for train data
 doc.vec_train <- VectorSource(cat_dog$comment)
+#doc.vec_train <- VectorSource(enc2utf8(cat_dog$comment))
 doc.corpus_train <- Corpus(doc.vec_train)
-doc.corpus_train <- tm_map(doc.corpus_train , tolower)
+doc.corpus_train <- tm_map(doc.corpus_train , tolower) # if this line throws an error,
+# uncomment line 489 and rerun this section from there.
 doc.corpus_train <- tm_map(doc.corpus_train, removePunctuation)
 doc.corpus_train <- tm_map(doc.corpus_train, removeNumbers)
 doc.corpus_train <- tm_map(doc.corpus_train, removeWords, stopwords("english"))
