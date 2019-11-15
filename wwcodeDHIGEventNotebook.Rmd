@@ -54,6 +54,8 @@ Before we get going using some helpful tokenization packages, let's take a look 
 ```{r base analysis, message = F, warning = F}
 
 # load relevant libraries
+#install.packages('gutenbergr') # uncomment and run these first two lines if packages do not load
+#install.packages('dplyr')
 library(gutenbergr)
 library(dplyr)
 
@@ -121,14 +123,11 @@ Uncomment the install statements and run the block below to install necessary pa
 #install.packages('tidyverse')
 #install.packages('tidytext')
 #install.packages('SnowballC')
-#install.packages('gutenbergr')
 #install.packages('gmodels')
-#install.packages('scales')
 
 library(tidyverse)
 library(tidytext)
 library(SnowballC)
-library(gutenbergr)
 library(gmodels)
 
 ```
@@ -348,7 +347,7 @@ So plotting top frequent words is nice and can give us an idea of what an author
 
 ## An Example Machine Learning Application
 
-Let's say we're at a fancy party, and someone has the audacity to spark a debate concerning the superiority of dog or cat owners. Everyone scoffs in disbelief, but they all secretly want to weigh in. The conversation gets so heated that the nefarious ne'er do well who started it finally says, "Well, I personally like cats more, but I know I cannot reach the dog people in the room because they just seem to speak a different language. 
+Let's say we're at a fancy party, and someone has the audacity to spark a debate concerning the superiority of dog or cat owners. Everyone scoffs in disbelief, but they all secretly want to weigh in. The conversation gets so heated that the nefarious ne'er do well who started it finally says, "Well, I personally like cats more, but I know I cannot reach the dog people in the room because they just seem to speak a different language." 
 
 How could Mr. Cat-Arguer say such a thing? How could we verify his salacious surmisal?
 
@@ -463,6 +462,7 @@ We'll begin by installing and loading some more libraries and then adjusting our
 ```{r loading and adjusting, message = F, warning = F}
 
 # load tm package
+#install.packages('tm')
 library(tm)
 
 # adjust data to add unique ids, combine, and shuffle
@@ -502,7 +502,7 @@ DTM_all <- removeSparseTerms(DTM_all, .999)
 df_dtm <- as.data.frame(as.matrix(DTM_all))
 
 # add dependent variable
-df_dtm$subreddit <- cat_dog$subreddit
+df_dtm$Subreddit <- cat_dog$subreddit
 
 ```
 
@@ -524,10 +524,9 @@ word_bayes_cv <- lapply(folds, function(x){
   training_fold <- df_dtm[-x, ]
   test_fold <- df_dtm[x, ]
   classifier <- naiveBayes(x = training_fold[, -ncol(df_dtm)],
-                           y = training_fold$subreddit)
+                           y = training_fold$Subreddit)
   y_pred <- predict(classifier, newdata = test_fold[-ncol(df_dtm)])
   cm <- table(test_fold[, ncol(df_dtm)], y_pred)
-  print(cm)
   accuracy = (cm[1,1] + cm[2,2])/(cm[1,1] + cm[2,2] + cm[1,2] + cm[2,1])
   return(accuracy)
 })
@@ -541,7 +540,7 @@ mean(acc_df$V1)
 
 ## Talking about results and concluding
 
-In my run at this set, we can see that, with word features alone, our Naive Bayes classifier does not achieve a high accuracy rate for separating dog lovers from our Reddit dataset from cat lovers. What we might be able to conclude, then, is that these two groups, unlike Mr. Argument-Starter suggested, speak a similar language...or at least use similar words. As we noticed earlier, 60% of the token types appearing in the cat comments also appeared in the dog comments. While the dog commenters used more word types (and more words in general) than the cat commenters, perhaps we could check to see if many of these words appeared sparsely.
+In our run at this set, we can see that, with word features alone, our Naive Bayes classifier does not achieve a high accuracy rate for separating dog lovers from our Reddit dataset from cat lovers. What we might be able to conclude, then, is that these two groups, unlike Mr. Argument-Starter suggested, speak a similar language...or at least use similar words. As we noticed earlier, 60% of the token types appearing in the cat comments also appeared in the dog comments. While the dog commenters used more word types (and more words in general) than the cat commenters, perhaps we could check to see if many of these words appeared sparsely.
 
 So what's next? We could reconsider the types of characters we remove from our word features and perhaps adjust some of our classifier's default parameters.
 
